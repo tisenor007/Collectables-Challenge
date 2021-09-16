@@ -22,7 +22,7 @@ public class Pickup : MonoBehaviour
     void Start()
     {
         spawnHeight = transform.position.y;
-        growthRate = 0.0025f;
+        growthRate = 0.005f;
         moveRate = 0.0005f;
         isGrown = true;
         movingUp = false;
