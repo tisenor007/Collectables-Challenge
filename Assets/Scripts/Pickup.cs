@@ -7,6 +7,7 @@ public class Pickup : MonoBehaviour
     // Start is called before the first frame update
     public int respawnTime;
     public float rotationsSpeed;
+    public AudioSource collectSound;
     private int maxRespawnTime;
 
     private float scale;
@@ -60,6 +61,7 @@ public class Pickup : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        collectSound.Play();
         respawnTime = maxRespawnTime;
         isGrown = false;
         //collider is turned off until resawned to prevent collecting between respawns
