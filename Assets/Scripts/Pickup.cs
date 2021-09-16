@@ -9,57 +9,62 @@ public class Pickup : MonoBehaviour
     public float rotationsSpeed;
     private int maxRespawnTime;
 
-    private Color myColor;
-    private Renderer myRenderer;
-    private float transparency;
-    private bool isSolid;
+    private float scale;
+    private float growthRate;
+    private bool isGrown;
+
+    private float myY;
+    private float moveRate;
+    private bool movingUp;
+    private float spawnHeight;
 
     void Start()
     {
-        myRenderer = GetComponent<Renderer>();
+        spawnHeight = transform.position.y;
+        growthRate = 0.0025f;
+        moveRate = 0.0005f;
+        isGrown = true;
+        movingUp = false;
         respawnTime = respawnTime * 600;
         maxRespawnTime = respawnTime;
     }
 
     // Update is called once per frame
     void Update()
-    {
-        Debug.Log(isSolid);
-        Debug.Log(transparency);
+    {   
         respawnTime--;
+        transform.position = new Vector3(transform.position.x, myY, transform.position.z);
         transform.Rotate(0, rotationsSpeed * Time.deltaTime, 0);
-        
-       
-        this.transform.localScale = new Vector3(transparency, transparency, transparency);
-        if (isSolid == true)
-        {
-            transparency = transparency - 0.5f;
-        }
-        if (isSolid == false)
-        {
-            transparency = transparency + 0.5f;
-        }
 
-        if (transparency >= 1f)
-        {
-            transparency = 1f;
-        }
-        if (transparency <= 0f)
-        {
-            transparency = 0f;
-        }
+        //growth / shrinking
+        transform.localScale = new Vector3(scale, scale, scale);
+        if (isGrown == true){ scale = scale + growthRate;}
+        if (isGrown == false){ scale = scale - growthRate;}
+        //caps
+        if (scale >= 0.5f){ scale = 0.5f;}
+        if (scale <= 0f){ scale = 0f;}
+
+        //moving up and down
+        if (transform.position.y <= spawnHeight - 0.5) { movingUp = true; }
+        if (transform.position.y >= spawnHeight + 0.5) { movingUp = false; }
+        if (movingUp == true) { myY = myY + moveRate; }
+        if (movingUp == false) { myY = myY - moveRate; }
 
         if (respawnTime <= 0f)
         {
-            isSolid = true;
+            isGrown = true;
             GetComponent<Collider>().enabled = true;
         }
+      
     }
 
     public void OnTriggerEnter(Collider other)
     {
         respawnTime = maxRespawnTime;
-        isSolid = false;
+        isGrown = false;
+        //collider is turned off until resawned to prevent collecting between respawns
         GetComponent<Collider>().enabled = false;
     }
+
+    //Slight bug, cube always at Y=0, but then floats to disired spot and doesn't come back...... 
 }
